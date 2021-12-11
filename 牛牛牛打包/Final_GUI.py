@@ -358,6 +358,109 @@ class SegmentationWindow(QWidget):
             ''')
 
 
+
+#cell filter window
+class FilterWindow(QWidget):
+    def __init__(self, name, Layout):
+        super().__init__()
+        self.name = name
+        self.Layout = Layout
+        self.init_ui()
+        
+        
+    def echo(self, value):
+      '''显示对话框返回值'''
+      QMessageBox.information(self, "返回值",  "得到：{}\n\ntype: {}".format(value, type(value)), QMessageBox.Yes | QMessageBox.No)
+    #pass
+    
+    def do_btn32(self, event): # 文件：文件夹
+      dir = QFileDialog.getExistingDirectory(self, 
+                  "choose file", 
+                  "C:/")         # 起始路径
+      segmentation.seg(dir)
+      
+      
+    
+    
+
+    def init_ui(self):
+        self.right_widget = QtWidgets.QWidget() # 创建右侧部件
+        self.right_widget.setObjectName('right_widget')
+        self.right_layout = QtWidgets.QGridLayout()
+        self.right_widget.setLayout(self.right_layout) # 设置右侧部件布局为网格
+
+        self.Layout.addWidget(self.right_widget,0,2,12,10) # 右侧部件在第0行第3列，占8行9列
+
+        self.right_recommend_label1 = QtWidgets.QLabel("Detect Active Cells")
+        self.right_recommend_label1.setObjectName('right_lable')
+
+        self.right_recommend_widget = QtWidgets.QWidget() # 推荐封面部件
+        self.right_recommend_layout = QtWidgets.QGridLayout() # 推荐封面网格布局
+        self.right_recommend_widget.setLayout(self.right_recommend_layout)
+        
+        
+
+        
+        self.recommend_button_11 = QtWidgets.QToolButton()
+        self.recommend_button_11.setText("Process") # 设置按钮文本
+        self.recommend_button_11.clicked.connect(self.do_btn32)
+        self.recommend_button_11.setIcon(QtGui.QIcon('./start.jpg')) # 设置按钮图标
+        self.recommend_button_11.setIconSize(QtCore.QSize(100,80)) # 设置图标大小
+        self.recommend_button_11.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon) # 设置按钮形式为上图下文
+
+        
+
+
+        self.right_recommend_layout.addWidget(self.recommend_button_11,0,0)
+        
+        
+
+       
+        self.right_layout.addWidget(self.right_recommend_label1, 2, 0, 1, 8, Qt.AlignTop)
+
+        self.right_layout.addWidget(self.right_recommend_widget, 7, 0, 2, 9, Qt.AlignTop)
+  
+        self.right_widget.setStyleSheet('''
+            QWidget#right_widget{
+                color:#232C51;
+                border-image:url(./filterbackground.png);
+                background:white;
+                border-top:10px solid darkGray;
+                border-bottom:1px solid darkGray;
+                border-right:1px solid darkGray;
+                border-top-right-radius:20px;
+                border-bottom-right-radius:20px;
+            }
+            QLabel#right_lable{
+                border:none;
+                font-size:40px;
+                font-weight:700;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+        ''')
+
+        self.right_recommend_widget.setStyleSheet(
+            '''
+            QToolButton{
+                border:none;
+                background:yellow;
+                width:100px;
+                height:100px;
+                border-top:1px solid darkRed;
+                border-bottom:1px solid darkRed;
+                border-top-right-radius:20px;
+                border-bottom-right-radius:20px;
+                border-top-left-radius:20px;
+                border-bottom-left-radius:20px;
+            }
+            QToolButton:hover{border-bottom:2px solid #F76677;}
+            ''')
+
+
+
+
+
+
 "这里是一个test"
 class scan_us(QWidget):
     
@@ -554,7 +657,7 @@ class MainUi(QtWidgets.QMainWindow):
         
         self.left_button_10 = QtWidgets.QPushButton(qtawesome.icon('fa.star',color='white'),"Find active cells")
         self.left_button_10.setObjectName('left_button')
-        #self.left_button_10.clicked.connect(self.Filter())
+        self.left_button_10.clicked.connect(self.Filterwind)
 
         self.left_layout.addWidget(self.left_mini, 0, 0,1,1)
         self.left_layout.addWidget(self.left_close, 0, 2,1,1)
@@ -688,6 +791,13 @@ class MainUi(QtWidgets.QMainWindow):
     def Segmentation(self,img_path):
         Segment_window = SegmentationWindow("Segment",self.main_layout)
         self.windowList.append(Segment_window)
+        # 先关闭第一个窗口,视觉上好看
+        self.right_widget.right_widget.close()
+
+
+    def Filterwind(self,img_path):
+        Filter_window = FilterWindow("Filter",self.main_layout)
+        self.windowList.append(Filter_window)
         # 先关闭第一个窗口,视觉上好看
         self.right_widget.right_widget.close()
 
